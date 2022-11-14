@@ -4,10 +4,10 @@ const debug = require('debug')('dsp-engine');
 const openrtb = require('openrtb');
 const moment = require('moment');
 const uuidv1 = require('uuid/v1');
-const ResponseBuilder = openrtb.getBuilder({ builderType: 'bidResponse'} );
+const ResponseBuilder = openrtb.getBuilder({ builderType: 'bidResponse' });
 
-const SwaggerUI = require('swagger-ui-restify');
-const apiDocument = require('./api-docs.json');
+// const SwaggerUI = require('swagger-ui-restify');
+// const apiDocument = require('./api-docs.json');
 
 class DSPEngine {
   constructor(options) {
@@ -21,8 +21,8 @@ class DSPEngine {
     this.server.get('/healthcheck', this._handleHealthCheck.bind(this));
     this.server.get('/schema/*', restify.plugins.serveStaticFiles('./engine/schema'));
 
-    this.server.get('/*', ...SwaggerUI.serve);
-    this.server.get('/', SwaggerUI.setup(apiDocument));
+    // this.server.get('/*', ...SwaggerUI.serve);
+    // this.server.get('/', SwaggerUI.setup(apiDocument));
 
     this.agents = [];
   }
@@ -51,18 +51,18 @@ class DSPEngine {
       try {
         let bids = agent.getBids(req.body.imp);
         let bidResponse = ResponseBuilder
-        .timestamp(moment.utc().format())
-        .status(1)
-        .id(uuidv1())
-        .bidderName(agent.name())
-        .seatbid([
-          {
-            bid: bids
-          }
-        ])
-        .build();
+          .timestamp(moment.utc().format())
+          .status(1)
+          .id(uuidv1())
+          .bidderName(agent.name())
+          .seatbid([
+            {
+              bid: bids
+            }
+          ])
+          .build();
         res.send(bidResponse, { 'x-openrtb-version': '2.3' });
-        next();  
+        next();
       }
       catch (errObj) {
         debug('error: %o', errObj);
@@ -84,7 +84,7 @@ class DSPEngine {
     let ad = agent.getAdByCampaignId(winBid.cid);
     let creative = agent.getCreativeByAdId(ad.id);
     debug('creative: %o', creative);
-  
+
     let mediaFile = `<MediaFile delivery="progressive" type="video/mp4" width="${creative.w}" height="${creative.h}" scalable="true"><![CDATA[${creative.mediaFile}]]></MediaFile>`;
     let tracking = `<Impression><![CDATA[${agent.getAdServerUrl()}/track/?price=${req.query.price}]]></Impression>`;
     let adSystem = `<AdSystem>${agent.getAdSystem()}</AdSystem><AdTitle>${ad.title}</AdTitle>`;
@@ -92,7 +92,7 @@ class DSPEngine {
     let videoAdMarkup = `<VAST version="2.0"><Ad id="${ad.id}"><InLine>${adSystem}<Creatives><Creative id="video"><Linear><Duration>${adDuration}</Duration><MediaFiles>${mediaFile}</MediaFiles></Linear></Creative></Creatives>${tracking}</InLine></Ad></VAST>`;
     res.setHeader('content-type', 'application/xml');
     res.sendRaw(videoAdMarkup);
-    next();  
+    next();
   }
 
   _handleHealthCheck(req, res, next) {
