@@ -4,7 +4,10 @@
   "description": "Open Source Demand Side Platform in NodeJs by Eyevinn",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "deploy": "npm run build && vercel",
+    "deploy:prod": "npm run build && vercel --prod"
   },
   "author": "devel@eyevinn.se",
   "license": "Apache-2.0",
@@ -13,7 +16,11 @@
     "moment": "^2.29.4",
     "openrtb": "^3.6.1",
     "restify": "^8.4.0",
+    "restify-errors": "^8.0.2",
     "swagger-ui-restify": "^3.0.8",
     "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "vercel": "^28.1.0"
   }
 }

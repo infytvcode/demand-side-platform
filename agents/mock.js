@@ -357,6 +357,13 @@ class MockAgent {
       let ad = this.getAdByCampaignId(campaign.id);
       let creative = MOCK_CREATIVES.find(cr => cr.id === ad.crid);
       let bidId = uuidv1() + '_' + imp.id;
+
+      let mediaFile = `<MediaFile delivery="progressive" type="video/mp4" width="${creative.w}" height="${creative.h}" scalable="true"><![CDATA[${creative.mediaFile}]]></MediaFile>`;
+      let tracking = `<Impression><![CDATA[${this.getAdServerUrl()}/track/?price=\${AUCTION_PRICE}]]></Impression>`;
+      let adSystem = `<AdSystem>${this.getAdSystem()}</AdSystem><AdTitle>${ad.title}</AdTitle>`;
+      let adDuration = new Date(ad.duration * 1000).toISOString().substr(11, 8);
+      let videoAdMarkup = `<VAST version="2.0"><Ad id="${ad.id}"><InLine>${adSystem}<Creatives><Creative id="video"><Linear><Duration>${adDuration}</Duration><MediaFiles>${mediaFile}</MediaFiles></Linear></Creative></Creatives>${tracking}</InLine></Ad></VAST>`;
+
       let bid = {
         id: bidId,
         status: 1,
@@ -365,7 +372,8 @@ class MockAgent {
         impid: imp.id,
         price: deal.price,
         adid: ad.id,
-        cid: campaign.id, 
+        adm: videoAdMarkup,
+        cid: campaign.id,
         crid: creative.id,
         nurl: `${this.getAdServerUrl()}/win?bid=${bidId}&agent=${this.name()}` + "&price=${AUCTION_PRICE}"
       };
@@ -377,7 +385,7 @@ class MockAgent {
     return bids;
   }
 
-  getBidById(id) {
+  getBidById(id) {
     debug('getBidById(): %O', this.bids);
     return this.bids[id];
   }
