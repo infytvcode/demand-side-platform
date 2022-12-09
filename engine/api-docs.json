@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Eyevinn Demand Side Platform server",
+    "title": "InfyTV Demand Side Platform server",
     "description": "A simple Open Source Demand Side Platform for educational and testing purposes",
     "version": "0.1.0"
   },
